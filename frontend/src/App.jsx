@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import API_URL from "./services/api";
 import Login from "./pages/Login";
@@ -15,107 +16,132 @@ function App() {
   );
   const [editingId, setEditingId] = useState(null);
   const [showRegister, setShowRegister] = useState(true);
+  const [error, setError] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setLoggedIn(false);
-  }
+    setExpenses([]);
+    setError("");
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await fetch(`${API_URL}/expenses${editingId ?`/${editingId}` : ""}`, {
-      method: editingId ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        title,
-        amount,
-        category,
-        date,
-        description,
-      }),
-    });
+    setError("");
 
-    const data = await response.json();
+    try {
+      const response = await fetch(
+        `${API_URL}/expenses${editingId ? `/${editingId}` : ""}`,
+        {
+          method: editingId ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            title,
+            amount,
+            category,
+            date,
+            description,
+          }),
+        }
+      );
 
-    console.log("Create expense response:", data);
-    console.log("Response status:", response.status);
-    if (editingId) {
-  setExpenses((prevExpenses) =>
-    prevExpenses.map((expense) =>
-      expense._id === editingId ? data : expense
-    )
-  );
-} else {
-  setExpenses((prevExpenses) => [...prevExpenses, data]);
-}
+      const data = await response.json();
+
+      console.log("Expense response:", data);
+      console.log("Response status:", response.status);
+
+      if (!response.ok) {
+        setError(data.message || "Failed to save expense");
+        return;
+      }
+
+      if (editingId) {
+        setExpenses((prevExpenses) =>
+          prevExpenses.map((expense) =>
+            expense._id === editingId ? data : expense
+          )
+        );
+      } else {
+        setExpenses((prevExpenses) => [...prevExpenses, data]);
+      }
+
+      setTitle("");
+      setAmount("");
+      setCategory("");
+      setDate("");
+      setDescription("");
+      setEditingId(null);
+    } catch (error) {
+      console.error("Expense error:", error.message);
+      setError("Unable to connect to the server. Please try again.");
+    }
+  };
+
+  const handleEdit = (expense) => {
+    setEditingId(expense._id);
+    setTitle(expense.title);
+    setAmount(expense.amount);
+    setCategory(expense.category);
+    setDate(expense.date ? expense.date.split("T")[0] : "");
+    setDescription(expense.description || "");
+    setError("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
     setTitle("");
     setAmount("");
     setCategory("");
     setDate("");
     setDescription("");
-    setEditingId(null);
-  } catch (error) {
-    console.error("Create expense error:", error.message);
-  }
-};
+    setError("");
+  };
 
-const handleEdit = (expense) => {
-  setEditingId(expense._id);
-  setTitle(expense.title);
-  setAmount(expense.amount);
-  setCategory(expense.category);
-  setDate(expense.date ? expense.date.split("T")[0] : "");
-  setDescription(expense.description || "");
-};
+  const handleDelete = async (id) => {
+    setError("");
 
-const handleCancelEdit = () => {
+    try {
+      const response = await fetch(`${API_URL}/expenses/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-  setEditingId(null);
-  setTitle("");
-  setAmount("");
-  setCategory("");
-  setDate("");
-  setDescription("");
-};
+      const data = await response.json();
 
-      const handleDelete = async (id) => {
-  try {
-    const response = await fetch(`${API_URL}/expenses/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+      console.log("Delete response:", data);
 
-    const data = await response.json();
+      if (!response.ok) {
+        setError(data.message || "Failed to delete expense");
+        return;
+      }
 
-    console.log("Delete response:", data);
-
-    if (response.ok) {
       setExpenses((prevExpenses) =>
         prevExpenses.filter((expense) => expense._id !== id)
       );
 
-      // If the deleted expense was being edited,
-      // clear the edit form as well.
       if (editingId === id) {
         handleCancelEdit();
       }
+    } catch (error) {
+      console.error("Delete error:", error.message);
+      setError("Unable to connect to the server. Please try again.");
     }
-  } catch (error) {
-    console.error("Delete error:", error.message);
-  }
-};
+  };
+
   useEffect(() => {
     if (!loggedIn) {
       return;
     }
+
     const fetchExpenses = async () => {
+      setError("");
+
       try {
         const response = await fetch(`${API_URL}/expenses`, {
           headers: {
@@ -124,7 +150,16 @@ const handleCancelEdit = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch expenses");
+          const data = await response.json().catch(() => ({}));
+
+          if (response.status === 401) {
+            localStorage.removeItem("token");
+            setLoggedIn(false);
+            setError("Session expired. Please login again.");
+            return;
+          }
+
+          throw new Error(data.message || "Failed to fetch expenses");
         }
 
         const data = await response.json();
@@ -133,6 +168,7 @@ const handleCancelEdit = () => {
         console.log("Expenses:", data);
       } catch (error) {
         console.error("Error:", error.message);
+        setError("Unable to load expenses. Please try again.");
       }
     };
 
@@ -141,142 +177,174 @@ const handleCancelEdit = () => {
 
   return (
     <>
-    {!loggedIn && !showRegister && (
-      <Login onLogin={() => setLoggedIn(true)} 
-        onShowRegister={() =>
-          setShowRegister(true)}
-      />
-    )} 
-    {!loggedIn && showRegister &&(
-      <Register onRegister={() =>
-        setShowRegister(false)} />
-    )}
-    {loggedIn&& (  
-    <div className="summary-card">
-      <h1>Expense Tracker</h1>
-      <button onClick={handleLogout}>Logout</button>
-      <div>
+      {!loggedIn && !showRegister && (
+        <Login
+          onLogin={() => setLoggedIn(true)}
+          onShowRegister={() => setShowRegister(true)}
+        />
+      )}
+
+      {!loggedIn && showRegister && (
+        <Register onRegister={() => setShowRegister(false)} />
+      )}
+
+      {loggedIn && (
         <div className="summary-card">
-  <p>Total Entries</p> <strong>{expenses.length}</strong>
-  </div>
-<div className="sunnary-card">
-  <p>Total Spent</p><strong> ₹
-    {expenses.reduce(
-      (total, expense) => total + Number(expense.amount),
-      0
-    )}
-    </strong>
-  
-</div>
-<div>
-  <p>This Month</p> <strong> ₹
-    {expenses
-      .filter((expense) => {
-        const expenseDate = new Date(expense.date);
-        const today = new Date();
+          <h1>Expense Tracker</h1>
 
-        return (
-          expenseDate.getMonth() === today.getMonth() &&
-          expenseDate.getFullYear() === today.getFullYear()
-        );
-      })
-      .reduce((total, expense) => total + Number(expense.amount), 0)}
-  </strong>
-  </div>
-  <div>
+          <button onClick={handleLogout}>Logout</button>
 
-  <p>This Week</p><strong> ₹
-    {expenses
-      .filter((expense) => {
-        const expenseDate = new Date(expense.date);
-        const today = new Date();
+          {error && <p>{error}</p>}
 
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - today.getDay());
-        startOfWeek.setHours(0, 0, 0, 0);
+          <div>
+            <div className="summary-card">
+              <p>Total Entries</p>
+              <strong>{expenses.length}</strong>
+            </div>
 
-        return expenseDate >= startOfWeek && expenseDate <= today;
-      })
-      .reduce((total, expense) => total + Number(expense.amount), 0)}
-  </strong>
-  </div>
-</div>
-      <form onSubmit={handleSubmit}>
-  <label htmlFor="expense-title">Title</label>
-  <input
-    id="expense-title"
-    type="text"
-    placeholder="Title"
-    value={title}
-    onChange={(e) => setTitle(e.target.value)}
-  />
+            <div className="sunnary-card">
+              <p>Total Spent</p>
+              <strong>
+                ₹
+                {expenses.reduce(
+                  (total, expense) => total + Number(expense.amount),
+                  0
+                )}
+              </strong>
+            </div>
 
-  <label htmlFor="expense-amount">Amount</label>
-  <input
-    id="expense-amount"
-    type="number"
-    placeholder="Amount"
-    value={amount}
-    onChange={(e) => setAmount(e.target.value)}
-  />
+            <div>
+              <p>This Month</p>
+              <strong>
+                ₹
+                {expenses
+                  .filter((expense) => {
+                    const expenseDate = new Date(expense.date);
+                    const today = new Date();
 
-  <label htmlFor="expense-category">Category</label>
-  <input
-    id="expense-category"
-    type="text"
-    placeholder="Category"
-    value={category}
-    onChange={(e) => setCategory(e.target.value)}
-  />
+                    return (
+                      expenseDate.getMonth() === today.getMonth() &&
+                      expenseDate.getFullYear() === today.getFullYear()
+                    );
+                  })
+                  .reduce(
+                    (total, expense) => total + Number(expense.amount),
+                    0
+                  )}
+              </strong>
+            </div>
 
-  <label htmlFor="expense-date">Date</label>
-  <input
-    id="expense-date"
-    type="date"
-    value={date}
-    onChange={(e) => setDate(e.target.value)}
-  />
+            <div>
+              <p>This Week</p>
+              <strong>
+                ₹
+                {expenses
+                  .filter((expense) => {
+                    const expenseDate = new Date(expense.date);
+                    const today = new Date();
 
-  <label htmlFor="expense-description">Description</label>
-  <input
-    id="expense-description"
-    type="text"
-    placeholder="Description"
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-  />
+                    const startOfWeek = new Date(today);
+                    startOfWeek.setDate(
+                      today.getDate() - today.getDay()
+                    );
+                    startOfWeek.setHours(0, 0, 0, 0);
 
-  <button type="submit">
-    {editingId ? "Update Expense" : "Add Expense"}
-  </button>
+                    return (
+                      expenseDate >= startOfWeek &&
+                      expenseDate <= today
+                    );
+                  })
+                  .reduce(
+                    (total, expense) => total + Number(expense.amount),
+                    0
+                  )}
+              </strong>
+            </div>
+          </div>
 
-  {editingId && (
-    <button type="button" onClick={handleCancelEdit}>
-      Cancel Edit
-    </button>
-  )}
-</form>
-<div>
-  <h2>Expenses</h2>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="expense-title">Title</label>
+            <input
+              id="expense-title"
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
 
-  {expenses.map((expense) => (
-    <div key={expense._id}>
-      <p>{expense.title}</p>
-      <p>₹{expense.amount}</p>
-      <p>{expense.category}</p>
-      <p>{expense.description}</p>
+            <label htmlFor="expense-amount">Amount</label>
+            <input
+              id="expense-amount"
+              type="number"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
 
-      <button onClick={() => handleEdit(expense)}>
-        Edit</button>
-      <button onClick={() =>
-        handleDelete(expense._id)}>Delete</button>
-    </div>
-  ))}
-</div>
-    </div>
-    )}
+            <label htmlFor="expense-category">Category</label>
+            <input
+              id="expense-category"
+              type="text"
+              placeholder="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+
+            <label htmlFor="expense-date">Date</label>
+            <input
+              id="expense-date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+
+            <label htmlFor="expense-description">
+              Description
+            </label>
+            <input
+              id="expense-description"
+              type="text"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+
+            <button type="submit">
+              {editingId ? "Update Expense" : "Add Expense"}
+            </button>
+
+            {editingId && (
+              <button type="button" onClick={handleCancelEdit}>
+                Cancel Edit
+              </button>
+            )}
+          </form>
+
+          <div>
+            <h2>Expenses</h2>
+
+            {expenses.map((expense) => (
+              <div key={expense._id}>
+                <p>{expense.title}</p>
+                <p>₹{expense.amount}</p>
+                <p>{expense.category}</p>
+                <p>{expense.description}</p>
+
+                <button onClick={() => handleEdit(expense)}>
+                  Edit
+                </button>
+
+                <button onClick={() => handleDelete(expense._id)}>
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 export default App;
+
