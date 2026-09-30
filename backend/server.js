@@ -17,7 +17,18 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: "https://expense-tracker-drum.netlify.app"
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "https://expense-tracker-drum.netlify.app",
+      "http://localhost:5173"
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
 }));
 app.use(express.json());
 
