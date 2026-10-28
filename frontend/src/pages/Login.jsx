@@ -5,6 +5,7 @@ import API_URL from "../services/api";
 function Login({ onLogin, onShowRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -75,11 +76,18 @@ function Login({ onLogin, onShowRegister }) {
         <label htmlFor="login-password">Password</label>
         <input
           id="login-password"
-          type="password"
           placeholder="Password"
+          type={showPassword ? "text" : "Password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <button
+          type="button"
+          onClick={() => setShowPassword((prev) => !prev)}
+        >
+          {showPassword ? "Hide" : "Show"}
+        </button>
 
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}

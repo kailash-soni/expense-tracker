@@ -5,6 +5,7 @@ function Register({ onRegister }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -84,11 +85,17 @@ return (
       <label htmlFor="register-password">Password</label>
       <input
         id="register-password"
-        type="password"
+        type={showPassword ? "text" : "password"}
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      <button
+        type="button"
+        onClick={() => setShowPassword((prev) => !prev)}
+      >
+        {showPassword ? "Hide" : "Show"}
+      </button>
 
       <button type="submit" disabled={loading}>
         {loading ? "Registering..." : "Register"}
