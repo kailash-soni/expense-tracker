@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: function (origin, callback) {
       const allowedOrigins = [
-        "https://expense-tracker-drum.netlify.app",
+        "https://expense-tracker-yashtoy.netlify.app",
         "http://localhost:5173",
       ];
 
