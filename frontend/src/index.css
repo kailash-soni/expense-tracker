@@ -164,7 +164,7 @@ button:active:not(:disabled) {
 
 /* Login / Register */
 
-#root > div:not(:has(h2)) {
+#root>div:not(:has(h2)) {
   max-width: 460px;
   margin: 70px auto;
   padding: 34px;
@@ -176,12 +176,12 @@ button:active:not(:disabled) {
   box-shadow: var(--shadow);
 }
 
-#root > div:not(:has(h2)) h1 {
+#root>div:not(:has(h2)) h1 {
   margin-bottom: 28px;
   text-align: center;
 }
 
-#root > div:not(:has(h2)) p {
+#root>div:not(:has(h2)) p {
   margin-bottom: 14px;
   padding: 10px 12px;
 
@@ -192,9 +192,39 @@ button:active:not(:disabled) {
   font-size: 14px;
 }
 
+/* Password Show / Hide */
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  box-sizing: border-box;
+  width: 100%;
+  padding-right: 45px;
+}
+
+.password-wrapper .password-toggle,
+.password-wrapper .password-toggle:hover,
+.password-wrapper .password-toggle:focus,
+.password-wrapper .password-toggle:active {
+  all: unset;
+  position: absolute;
+  right: 10px;
+  top: calc(50% + 10px);
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  color: inherit;
+  background: transparent;
+  box-shadow: none;
+}
+
 /* Auth secondary button */
 
-#root > div:not(:has(h2)) > button:last-child {
+#root>div:not(:has(h2))>button:last-child {
   width: 100%;
   margin-top: 12px;
 
@@ -205,22 +235,22 @@ button:active:not(:disabled) {
   box-shadow: none;
 }
 
-#root > div:not(:has(h2)) > button:last-child:hover {
+#root>div:not(:has(h2))>button:last-child:hover {
   background: var(--accent-bg);
   border-color: #bfdbfe;
 }
 
 /* Expense Tracker */
 
-#root > div:has(h2) {
+#root>div:has(h2) {
   width: 100%;
 }
 
-#root > div:has(h2) > h1 {
+#root>div:has(h2)>h1 {
   margin-bottom: 8px;
 }
 
-#root > div:has(h2) > button {
+#root>div:has(h2)>button {
   float: right;
   margin-top: -42px;
 
@@ -230,13 +260,13 @@ button:active:not(:disabled) {
   box-shadow: none;
 }
 
-#root > div:has(h2) > button:hover {
+#root>div:has(h2)>button:hover {
   background: #fef2f2;
   color: var(--danger-hover);
   box-shadow: none;
 }
 
-#root > div:has(h2) > p {
+#root>div:has(h2)>p {
   margin-bottom: 30px;
   color: var(--text);
   font-size: 14px;
@@ -244,7 +274,7 @@ button:active:not(:disabled) {
 
 /* Expense form */
 
-#root > div:has(h2) > form {
+#root>div:has(h2)>form {
   max-width: none;
   margin-bottom: 40px;
   padding: 24px;
@@ -258,34 +288,34 @@ button:active:not(:disabled) {
 
 /* Form buttons */
 
-#root > div:has(h2) > form button[type="submit"] {
+#root>div:has(h2)>form button[type="submit"] {
   margin-top: 4px;
 }
 
-#root > div:has(h2) > form button[type="button"] {
+#root>div:has(h2)>form button[type="button"] {
   background: #f1f5f9;
   color: #475569;
   box-shadow: none;
 }
 
-#root > div:has(h2) > form button[type="button"]:hover {
+#root>div:has(h2)>form button[type="button"]:hover {
   background: #e2e8f0;
   box-shadow: none;
 }
 
 /* Expenses section */
 
-#root > div:has(h2) > div {
+#root>div:has(h2)>div {
   width: 100%;
 }
 
-#root > div:has(h2) > div > h2 {
+#root>div:has(h2)>div>h2 {
   margin-bottom: 16px;
 }
 
 /* Expense cards */
 
-#root > div:has(h2) > div > div {
+#root>div:has(h2)>div>div {
   position: relative;
 
   margin-bottom: 14px;
@@ -302,12 +332,12 @@ button:active:not(:disabled) {
     transform 0.2s ease;
 }
 
-#root > div:has(h2) > div > div:hover {
+#root>div:has(h2)>div>div:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-hover);
 }
 
-#root > div:has(h2) > div > div p:first-child {
+#root>div:has(h2)>div>div p:first-child {
   margin-bottom: 6px;
 
   color: var(--text-h);
@@ -315,7 +345,7 @@ button:active:not(:disabled) {
   font-weight: 700;
 }
 
-#root > div:has(h2) > div > div p:nth-child(2) {
+#root>div:has(h2)>div>div p:nth-child(2) {
   margin-bottom: 4px;
 
   color: var(--accent);
@@ -323,7 +353,7 @@ button:active:not(:disabled) {
   font-weight: 700;
 }
 
-#root > div:has(h2) > div > div p:nth-child(3) {
+#root>div:has(h2)>div>div p:nth-child(3) {
   margin-bottom: 6px;
 
   color: #475569;
@@ -331,7 +361,7 @@ button:active:not(:disabled) {
   font-weight: 600;
 }
 
-#root > div:has(h2) > div > div p:nth-child(4) {
+#root>div:has(h2)>div>div p:nth-child(4) {
   margin-bottom: 16px;
   color: var(--text);
   font-size: 14px;
@@ -339,7 +369,7 @@ button:active:not(:disabled) {
 
 /* Expense card buttons */
 
-#root > div:has(h2) > div > div button {
+#root>div:has(h2)>div>div button {
   min-height: 38px;
   padding: 8px 14px;
   margin-right: 8px;
@@ -347,14 +377,14 @@ button:active:not(:disabled) {
   font-size: 14px;
 }
 
-#root > div:has(h2) > div > div button:last-child {
+#root>div:has(h2)>div>div button:last-child {
   background: #ffffff;
   color: var(--danger);
   border: 1px solid #fecaca;
   box-shadow: none;
 }
 
-#root > div:has(h2) > div > div button:last-child:hover {
+#root>div:has(h2)>div>div button:last-child:hover {
   background: #fef2f2;
   box-shadow: none;
 }
@@ -374,26 +404,26 @@ button:active:not(:disabled) {
     font-size: 20px;
   }
 
-  #root > div:not(:has(h2)) {
+  #root>div:not(:has(h2)) {
     margin: 30px auto;
     padding: 24px 18px;
   }
 
-  #root > div:has(h2) > button {
+  #root>div:has(h2)>button {
     float: none;
     margin-top: 16px;
     margin-bottom: 20px;
   }
 
-  #root > div:has(h2) > p {
+  #root>div:has(h2)>p {
     clear: both;
   }
 
-  #root > div:has(h2) > form {
+  #root>div:has(h2)>form {
     padding: 18px;
   }
 
-  #root > div:has(h2) > div > div {
+  #root>div:has(h2)>div>div {
     padding: 17px;
   }
 }
@@ -405,7 +435,7 @@ button:active:not(:disabled) {
     padding: 20px 12px;
   }
 
-  #root > div:not(:has(h2)) {
+  #root>div:not(:has(h2)) {
     padding: 22px 16px;
     border-radius: 14px;
   }
@@ -414,7 +444,7 @@ button:active:not(:disabled) {
     width: 100%;
   }
 
-  #root > div:has(h2) > div > div button {
+  #root>div:has(h2)>div>div button {
     width: auto;
   }
 }

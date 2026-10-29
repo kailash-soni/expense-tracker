@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import API_URL from "../services/api";
 
@@ -72,23 +71,28 @@ function Login({ onLogin, onShowRegister }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        <div className="password-wrapper">
+          <label htmlFor="login-password">Password</label>
 
-        <label htmlFor="login-password">Password</label>
-        <input
-          id="login-password"
-          placeholder="Password"
-          type={showPassword ? "text" : "Password"}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <input
+            id="login-password"
+            placeholder="Password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <button
-          type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-        >
-          {showPassword ? "Hide" : "Show"}
-        </button>
-
+          {password.length > 0 && (
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? "🙈" : "👁"}
+            </button>
+          )}
+        </div>
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
@@ -102,4 +106,3 @@ function Login({ onLogin, onShowRegister }) {
 }
 
 export default Login;
-

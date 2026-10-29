@@ -57,58 +57,64 @@ function Register({ onRegister }) {
     }
   };
 
-return (
-  <div>
-    <h1>Register</h1>
+  return (
+    <div>
+      <h1>Register</h1>
 
-    {error && <p>{error}</p>}
+      {error && <p>{error}</p>}
 
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="register-name">Name</label>
-      <input
-        id="register-name"
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="register-name">Name</label>
+        <input
+          id="register-name"
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-      <label htmlFor="register-email">Email</label>
-      <input
-        id="register-email"
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <label htmlFor="register-email">Email</label>
+        <input
+          id="register-email"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <label htmlFor="register-password">Password</label>
-      <input
-        id="register-password"
-        type={showPassword ? "text" : "password"}
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button
-        type="button"
-        onClick={() => setShowPassword((prev) => !prev)}
-      >
-        {showPassword ? "Hide" : "Show"}
+        <div className="password-wrapper">
+          <label htmlFor="login-password">Password</label>
+
+          <input
+            id="login-password"
+            placeholder="Password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+        {password.length > 0 && (
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? "🙈" : "👁"}
+          </button>
+          )}
+        </div>
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
+      </form>
+
+      <button type="button" onClick={onRegister}>
+        Already have an account? Login
       </button>
-
-      <button type="submit" disabled={loading}>
-        {loading ? "Registering..." : "Register"}
-      </button>
-    </form>
-
-    <button type="button" onClick={onRegister}>
-      Already have an account? Login
-    </button>
-  </div>
-
-);
-
+    </div>
+  );
 }
 
 export default Register;
